@@ -74,36 +74,68 @@ module tt_um_vga_example(
       .r(inp_r)
   );
 
+  // CONSTANTS
+  localparam [9:0] IMAGE_WIDTH = 640;
+  localparam [9:0] IMAGE_HEIGHT = 480;
+
+  localparam FOCAL_LENGTH = 1;
+  localparam [9:0] VIEWPORT_WIDTH = 640;
+  localparam [9:0] VIEWPORT_HEIGHT = 480;
+  localparam signed [5:0] CAMERA_CENTER = {2'sd0, 2'sd0, 2'sd0};
+
+  localparam signed [29:0] VIEWPORT_U = {10'sd640, 10'sd0, 10'sd0};
+  localparam signed [29:0] VIEWPORT_V = {10'sd0, -10'sd480, 10'sd0};
+
+  localparam signed [5:0] PIXEL_DELTA_U = {2'sd1, 2'sd0, 2'sd0};
+  localparam signed [5:0] PIXEL_DELTA_V = {2'sd0, -2'sd1, 2'sd0};
+
+  localparam signed [29:0] VIEWPORT_UPPER_LEFT = {-10'sd320, 10'sd240, -10'sd1};
+  localparam signed [29:0] PIXEL00_LOC = {-10'sd319, 10'sd241, -10'sd1};
+
+  // VARIABLES
+  wire a = 1;
+
   reg [1:0] val = 0;
   reg counter = 0;
-
-  // assign R = val;
-  // assign G = val;
-  // assign B = val;
   
   always @(posedge clk) begin
-    // R <= 3;
-    // G <= 3;
-    // B <= 3;
     if (~rst_n) begin
       R <= 0;
       G <= 0;
       B <= 0;
     end else begin
-      // if (inp_up) begin
-      //   val <= val + 1;
+      // if (video_active) begin
+      //   R <= pix_y[9:8];
+      //   G <= pix_y[9:8];
+      //   B <= pix_y[9:8];
       // end
 
-      if (inp_up && counter == 0) begin
-        counter <= 1;
-        val <= val + 1;
-      end else if (!inp_up) begin
-        counter <= 0;
+      // if (pix_x < 20 && pix_y < 20) begin
+      //   R <= 3;
+      //   G <= 3;
+      //   B <= 3;
+      // end else begin
+      //   R <= 0;
+      //   G <= 0;
+      //   B <= 0;
+      // end
+
+      if (video_active) begin
+        R <= (pix_x + 64) >> 8;
+        G <= (pix_y + 64) >> 8;
+        B <= 0;
       end
-      
-      R <= val;
-      G <= val;
-      B <= val;
+
+      // if (inp_up && counter == 0) begin
+      //   counter <= 1;
+      //   val <= val + 1;
+      // end else if (!inp_up) begin
+      //   counter <= 0;
+      // end
+
+      // R <= val;
+      // G <= val;
+      // B <= val;
     end
   end
 
